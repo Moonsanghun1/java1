@@ -1,0 +1,15 @@
+package com.multishop.member.dao;
+
+import java.util.List;
+
+import com.multishop.main.dao.DAO;
+// DAO 상속
+import com.multishop.member.vo.MemberVO;
+public class MemberDAO extends DAO {
+
+	public List<MemberVO> list() throws Exception {
+		
+		List<MemberVO> list = null;
+		return list;
+	} // end of list()
+} // end of class(DAO)

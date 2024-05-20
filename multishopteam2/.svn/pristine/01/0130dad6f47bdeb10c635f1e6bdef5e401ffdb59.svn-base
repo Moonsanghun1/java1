@@ -1,0 +1,58 @@
+package com.multishop.order.dao;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.multishop.main.dao.DAO;
+import com.multishop.order.vo.OrderVO;
+import com.multishop.util.db.DB;
+
+public class OrderDAO extends DAO {
+	
+	public List<OrderVO> list() throws Exception {
+		
+		List<OrderVO> list = null;
+		
+		try {
+			// 1. 드라이버 확인 
+			// 2. 연결
+			con = DB.getConnection();
+			// 3. sql문
+			// 4. 실행 객체 생성
+			pstmt = con.prepareStatement(List);
+			// 5. 실행
+			rs = pstmt.executeQuery();
+			// 6. 표기 및 담기
+			if(rs != null) {
+				while(rs.next()) {
+					if(list == null)
+						list = new ArrayList<OrderVO>();
+					OrderVO vo = new OrderVO();
+					vo.setOno(rs.getLong("ono"));
+					vo.setProductName(rs.getString("product_name"));
+					vo.setProductCnt(rs.getLong("productcnt"));
+					vo.setProductName(rs.getString("product_name"));
+				}
+			}
+			
+			
+			
+			
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+			
+		}finally {
+			DB.close(con, pstmt, rs);
+		}
+		return list;
+	}
+	
+	final String List = "select o.ono, p.product_name, c.productcnt, c.totalprice, o.orderdate, o.status from cart c, orders o , product p" + 
+	"where  order by id asc";
+	
+	
+} //end of class
+
+

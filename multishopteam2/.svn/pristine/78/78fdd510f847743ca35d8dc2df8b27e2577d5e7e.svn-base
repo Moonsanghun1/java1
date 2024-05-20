@@ -1,0 +1,101 @@
+package com.multishop.order.dao;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.multishop.main.controller.Main;
+import com.multishop.main.dao.DAO;
+import com.multishop.order.vo.OrderVO;
+import com.multishop.util.db.DB;
+
+public class OrderDAO extends DAO {
+
+	// 1. 주문 리스트 작성
+	public List<OrderVO> list(String id) throws Exception {
+
+		List<OrderVO> list = null;
+
+		try {
+			// 1. 드라이버 확인
+			// 2. 연결
+			con = DB.getConnection();
+			// 3. sql문
+			// 4. 실행 객체 생성
+			pstmt = con.prepareStatement(List);
+			pstmt.setString(1, id);
+			// 5. 실행
+			rs = pstmt.executeQuery();
+			// 6. 표기 및 담기
+			if (rs != null) {
+				while (rs.next()) {
+					if (list == null)
+						list = new ArrayList<OrderVO>();
+					OrderVO vo = new OrderVO();
+					vo.setOno(rs.getLong("ono"));
+					vo.setProductName(rs.getString("product_name"));
+					vo.setProductCnt(rs.getLong("productcnt"));
+					vo.setTotalPrice(rs.getLong("totalprice"));
+					vo.setOrderDate(rs.getString("orderDate"));
+					vo.setStatus(rs.getString("status"));
+
+					list.add(vo);
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+
+		} finally {
+			DB.close(con, pstmt, rs);
+		}
+		return list;
+	}
+
+	// 2. 주문 리스트 작성
+	public OrderVO view(Long ono) throws Exception {
+
+		OrderVO vo = null;
+
+		try {
+			// 1. 드라이버 확인
+			// 2. 연결
+			con = DB.getConnection();
+			// 3. sql문
+			// 4. 실행 객체 생성
+			pstmt = con.prepareStatement(View);
+			pstmt.setLong(1, ono);
+			// 5. 실행
+			rs = pstmt.executeQuery();
+			// 6. 표기 및 담기
+			if (rs != null && rs.next()) {
+
+				vo = new OrderVO();
+				vo.setOno(rs.getLong("ono"));
+				vo.setProductName(rs.getString("product_name"));
+				vo.setProductCnt(rs.getLong("productcnt"));
+				vo.setTotalPrice(rs.getLong("totalprice"));
+				vo.setOrderDate(rs.getString("orderDate"));
+				vo.setAddr(rs.getString("addr"));
+				vo.setRequest(rs.getString("request"));
+				vo.setPayment(rs.getString("payment"));
+				vo.setStatus(rs.getString("status"));
+
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+
+		} finally {
+			DB.close(con, pstmt, rs);
+		}
+		return vo;
+	}
+
+	final String List = "select o.ono, p.product_name, c.productcnt, c.totalprice, to_char(o.orderdate, 'yyyy-mm-dd') orderdate, o.status from cart c, orders o , product p "
+			+ " where id = ? and (o.PRODUCT_NO = p.PRODUCT_NO) and (o.PRODUCT_NO = c.PRODUCTNO)";
+	final String View = "select o.ono, p.product_name, c.productcnt, c.totalprice, to_char(o.orderdate, 'yyyy-mm-dd') orderdate, o.Addr, o.request, o.Payment ,o.status  from cart c, orders o , product p "
+			+ " where ono = ? and (o.PRODUCT_NO = p.PRODUCT_NO) and (o.PRODUCT_NO = c.PRODUCTNO)";
+
+} // end of class
